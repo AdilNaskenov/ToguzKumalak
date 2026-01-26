@@ -1,0 +1,3 @@
+﻿  Togizkumalak.cpp
+C:\Users\Admin\source\repos\Togizkumalak\Togizkumalak\Togizkumalak.cpp(40,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Togizkumalak.vcxproj -> C:\Users\Admin\source\repos\Togizkumalak\x64\Debug\Togizkumalak.exe

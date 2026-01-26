@@ -1,0 +1,122 @@
+﻿#include <iostream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+// Константы цветов
+const string RED = "\033[31m";
+const string GREEN = "\033[32m";
+const string RESET = "\033[0m";
+
+// Функция для отрисовки доски (чтобы не повторять код)
+void printBoard(int kazan[18], int score1, int score2) {
+    system("cls");
+    cout << "Ochco (PC): " << score2 << endl;
+
+    // Верхний ряд (Игрок 2 / PC)
+    for (int i = 18; i >= 10; i--) cout << i << "\t";
+    cout << endl;
+    for (int i = 17; i >= 9; i--) cout << GREEN << kazan[i] << RESET << "\t";
+    cout << endl << endl;
+
+    // Нижний ряд (Игрок 1 / Ты)
+    for (int i = 0; i < 9; i++) cout << GREEN << kazan[i] << RESET << "\t";
+    cout << endl;
+    for (int i = 1; i <= 9; i++) cout << i << "\t";
+    cout << endl;
+
+    cout << "Ochco (You): " << score1 << endl << "--------------------------" << endl;
+}
+
+int main() {
+    int first = 0, second = 0;
+    int kazan[18];
+    for (int i = 0; i < 18; i++) kazan[i] = 9; // Инициализация
+
+    bool tyzgik_exists = true; // Можно ли еще создать туздык
+    int tslot = -1;
+    srand(time(0));
+    bool hod = true; // true - твой ход, false - PC
+
+    while (true) {
+        printBoard(kazan, first, second);
+
+        int n;
+        // Логика выбора лунки
+        if (hod) {
+            // Твой ход (сейчас рандом, но можно заменить на cin >> n)
+            do { n = 1 + rand() % 9; } while (kazan[n - 1] == 0);
+            cout << "You choose: " << n << endl;
+        }
+        else {
+            // Ход PC
+            do { n = 10 + rand() % 9; } while (kazan[n - 1] == 0);
+            cout << "PC chooses: " << n << endl;
+        }
+
+        int index = n - 1;
+        int balls = kazan[index];
+        kazan[index] = (balls == 1) ? 0 : 1; // Если 1 шарик, он уходит в след. лунку. Если больше - один остается.
+        int balls_to_distribute = (balls == 1) ? 1 : balls - 1;
+
+        int step = index + 1;
+        int last_pos = index;
+
+        for (int i = 0; i < balls_to_distribute; i++) {
+            if (step > 17) step = 0;
+            kazan[step]++;
+            last_pos = step;
+            step++;
+        }
+
+        // Правила захвата (Четность)
+        if (hod && last_pos >= 9 && last_pos <= 17) {
+            if (kazan[last_pos] % 2 == 0) {
+                first += kazan[last_pos];
+                kazan[last_pos] = 0;
+            }
+            else if (tyzgik_exists && kazan[last_pos] == 3 && last_pos != 17) {
+                // Туздык (нельзя в последней лунке)
+                tslot = last_pos;
+                tyzgik_exists = false;
+                first += 3;
+                kazan[last_pos] = 0;
+            }
+        }
+        else if (!hod && last_pos >= 0 && last_pos <= 8) {
+            if (kazan[last_pos] % 2 == 0) {
+                second += kazan[last_pos];
+                kazan[last_pos] = 0;
+            }
+            else if (tyzgik_exists && kazan[last_pos] == 3 && last_pos != 8) {
+                tslot = last_pos;
+                tyzgik_exists = false;
+                second += 3;
+                kazan[last_pos] = 0;
+            }
+        }
+
+        // Сбор из Туздыка (если он есть)
+        if (tslot != -1) {
+            if (tslot >= 9 && tslot <= 17) { first += kazan[tslot]; kazan[tslot] = 0; }
+            else { second += kazan[tslot]; kazan[tslot] = 0; }
+        }
+
+        // Проверка победы
+        if (first > 81 || second > 81) break;
+
+        hod = !hod;
+        cin.get(); // Пауза до нажатия Enter
+    }
+
+    cout << (first > 81 ? "YOU WIN!" : "PC WINS!") << endl;
+    return 0;
+}
+
+
+
+
+
+
