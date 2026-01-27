@@ -1,0 +1,45 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Compiled files
+*.exe
+*.dll
+*.obj
+*.pch
+*.pdb
+*.ilk
+*.log
+*.tlog
+*.idb
+*.iobj
+*.ipdb
+
+# Visual Studio cache/options directory
+.vs/
+*.vsidx
+*.vspscc
+*.vspx
+*.sap
+
+# User-specific files
+*.suo
+*.user
+*.sln.docstates
