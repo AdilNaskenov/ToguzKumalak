@@ -53,16 +53,43 @@ int main() {
             // Логика выбора лунки
             if (hod) {
                 do { n = 1 + rand() % 9; } while (kazan[n - 1] == 0);
+             /*   do { cin >> n; } while (kazan[n - 1] == 0);*/
                 cout << "You choose: " << n << endl;
             }
             else {
                 // Ход PC
+                int lunka[9];  
+                for (int j = 0; j < 9; j++) lunka[j] = 0;  
+
+                for (int i = 10; i <= 18; i++) {
+                    int a = (kazan[i - 1] + i - 1) - 18;
+                    if (kazan[a - 1] > 0 && (kazan[a - 1] + 2) % 3 == 0) {
+                        lunka[i - 10] = kazan[a - 1];
+                    }
+                }
+
+                int more = 0;
+                for (int i = 1; i <= 9; i++) {
+                    if (lunka[i - 1] > more) {
+                        more = lunka[i - 1];
+                    }
+                }
+
                 do { n = 10 + rand() % 9; } while (kazan[n - 1] == 0);
+
+                for (int i = 0; i <= 8; i++) {
+                    if (kazan[i] == more) {  
+                        n = i - 1;
+                    }
+                }
+               
                 cout << "PC chooses: " << n << endl;
             }
 
             int index = n - 1;
             int balls = kazan[index];
+           
+
             kazan[index] = (balls == 1) ? 0 : 1; // Если 1 шарик, он уходит в след. лунку. Если больше - один остается.
             int balls_to_distribute = (balls == 1) ? 1 : balls - 1;
 
@@ -163,7 +190,6 @@ int main() {
 
         cout << (first > 81 ? "YOU WIN!" : "PC WINS!") << endl;
         cout << "Human rating: " << R << endl << "PC rating: " << R1 << endl;
-        cin.get();
         cin.ignore(1000, '\n');
     }
     return 0;
