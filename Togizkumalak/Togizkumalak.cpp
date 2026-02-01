@@ -4,6 +4,9 @@
 #include <ctime>
 #include <cmath>
 #include <fstream>
+#include <thread>
+#include <chrono>
+
 using namespace std;
 
 const string RED = "\033[31m";
@@ -47,7 +50,7 @@ private:
 	int pits[18];
 	int kazan1 = 0;
 	int kazan2 = 0;
-	
+	bool tyzdyk = true;
 public:
 	Board() {
 		for (int i = 0; i < 18; i++) pits[i] = 9;
@@ -57,6 +60,39 @@ public:
 		return pits[index] == 0;
 	}
 	// Тот самый метод!
+	bool winner() {
+		int sum1 = 0;
+		for (int i = 0; i < 9; i++) {
+			if (pits[i] == 0) sum1++;
+		}
+		if (sum1 == 9) {
+			cout << "PC pobedil! Vsego horoshego!\n";
+			return false;
+		}
+
+		int sum2 = 0;
+		for (int i = 9; i < 18; i++) {
+			if (pits[i] == 0) sum2++;
+		}
+		if (sum2 == 9) {
+			cout << "Vi pobedili! Pozdravlyayu!\n";
+			return false;
+		}
+		if (kazan1 > 81 || kazan2 > 81) {
+			if (kazan1 > kazan2) {
+				cout << "Vi pobedili! Pozdravlyayu!\n";
+			}
+			else if (kazan2 > kazan1) {
+				cout << "PC pobedil! Vsego horoshego!\n";
+			}
+			else cout << "Nichya! Horoshaya igra!\n";
+			return false;
+		}
+		
+		return true;      
+	}
+
+	
 	void makeMove(int choice) {
 		int startPit = choice - 1; // Переводим ввод игрока (1-9) в индекс (0-8)
 		int hand = pits[startPit];
@@ -81,22 +117,28 @@ public:
 			pits[currentPit]++;
 			currentPit = (currentPit + 1) % 18; // Вот так мы ходим по кругу бесконечно
 		}
+		currentPit--;
 		if (currentPit <= 17 && currentPit >= 9) {
 			if (pits[currentPit] % 2 == 0) {
 				kazan1 += pits[currentPit];
 				pits[currentPit] = 0;
 				std::cout << "!!! Zahvat! Vi zabrali kamni protivnika !!!" << std::endl;
 			}
+			if (tyzdyk && pits[currentPit] == 3) {
+				kazan1 += 3;
+				tyzdyk = false;
+				pits[currentPit] = 0;
+				std::cout << "!!! Tyzdyk! Vi zabrali 3 kamnya !!!" << std::endl;
+			}
 		}
 		
-		// После хода всегда показываем результат
-		show();
+		show(choice,-1);
 
 	}
 
-	void makeMovePC(int choice) {
+	void makeMovePC(int pcChoice) {
 		// 1. Вычисляем индекс (для PC это 9-17)
-		int startPit = (choice - 1) + 9;
+		int startPit = (pcChoice - 1) + 9;
 		int hand = pits[startPit];
 
 		if (hand == 0) return; // Компьютер просто не должен выбирать пустые лунки
@@ -124,14 +166,22 @@ public:
 				pits[currentPit] = 0;
 				std::cout << "PC zabral vashi kamni!" << std::endl;
 			}
+			if (tyzdyk && pits[currentPit] == 3) {
+				kazan2 += 3;
+				tyzdyk = false;
+				std::cout << "!!! Tyzdyk! Vi zabrali 3 kamnya !!!" << std::endl;
+			}
 		}
-		show();
+		show(-1,pcChoice);
 	}
 
-	void show() {
+	void show(int choice,int pcChoice) {
 		cout << "Ochco (PC): " << kazan2 << endl;
 
-		for (int i = 9; i >= 1; i--) cout << i << "\t";
+		for (int i = 9; i >= 1; i--) {
+			if (i == pcChoice) cout << RED << i << RESET << "\t";
+			else cout << i << "\t";
+		}
 		cout << endl;
 
 
@@ -202,7 +252,10 @@ public:
 
 
 
-		for (int i = 1; i <= 9; i++) cout << i << "\t";
+		for (int i = 1; i <= 9; i++) {
+			if (i == choice) cout << GREEN << i << RESET << "\t";
+			else cout << i << "\t";
+		}
 		cout << endl;
 
 		cout << "Ochco (You): " << kazan1 << endl << "--------------------------" << endl;
@@ -216,19 +269,33 @@ int main() {
 	Board game;
 	
 	// Показываем начальную доску
-	game.show();
+	game.show(-1,-1);
 	// ВОТ ЗДЕСЬ мы вызываем метод!
 	// Представь, что пользователь ввел число 3
 	bool hod = true; // true - ты, false - PC
-	while (true) {
+	while (game.winner()) {
 		int choice;
 
 		if (hod) {
-			std::cout << "--- Vash hod! ---" << std::endl;
-			std::cout << "Viberite lunku (1-9): ";
-			std::cin >> choice;
+			string cmd;
 
-			// Тут можно добавить проверку: если лунка пустая, попросить ввести еще раз
+			while (true) {
+				cout << "--- Vash hod! ---" << std::endl;
+				cout << "Viberite lunku (1-9): ";
+				cin >> cmd;
+				if (cmd.size() == 1 && isdigit(cmd[0])) {
+					choice = cmd[0] - '0'; 
+					break; 
+				}
+
+				cout << "Oshibka! Tolko odna cifra.\n";
+
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			}
+
+			cout << "Vy vybrali: " << choice << endl;
+
 			game.makeMove(choice);
 
 			hod = false; // Передаем ход компьютеру
@@ -246,11 +313,28 @@ int main() {
 
 			hod = true; // Возвращаем ход тебе
 		}
-		
+		this_thread::sleep_for(chrono::seconds(2));
 	}
 
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
