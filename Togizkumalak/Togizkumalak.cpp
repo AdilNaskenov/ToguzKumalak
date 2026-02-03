@@ -237,13 +237,13 @@ public:
 			if (pits[currentPit] % 2 == 0) {
 				kazan2 += pits[currentPit]; // В КАЗАН КОМПЬЮТЕРА
 				pits[currentPit] = 0;
-				std::cout << RED << "PC zabral vashi kamni!" << RESET << std::endl;
+				cout << RED << "PC zabral vashi kamni!" << RESET << std::endl;
 			}
 			if (!tyzdyk2 && pits[currentPit] == 3) {
 				kazan2 += 3;
 				tyzdyk2 = true;
 				g2 = currentPit;
-				std::cout << RED << "Tyzdyk PC zabrali 3 kamnya!" << RESET << std::endl;
+				cout << RED << "Tyzdyk PC zabrali 3 kamnya!" << RESET << std::endl;
 			}
 		}
 		if (tyzdyk2) {
@@ -444,7 +444,7 @@ int main() {
 			hod = false; // Передаем ход компьютеру
 		}
 		else {
-			std::cout << "--- Hod PC... ---" << std::endl;
+			cout << "--- Hod PC... ---" << std::endl;
 
 			// Логика выбора для PC (как мы обсуждали раньше)
 			int pcChoice = 1;
