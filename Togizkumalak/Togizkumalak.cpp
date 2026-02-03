@@ -179,14 +179,14 @@ public:
 			if (pits[currentPit] % 2 == 0) {
 				kazan1 += pits[currentPit];
 				pits[currentPit] = 0;
-				std::cout << GREEN <<  "!!! Zahvat! Vi zabrali kamni protivnika !!!" << RESET << std::endl;
+				cout << GREEN <<  "!!! Zahvat! Vi zabrali kamni protivnika !!!" << RESET << std::endl;
 			}
 			if (!tyzdyk && pits[currentPit] == 3) {
 				kazan1 += 3;
 				tyzdyk = true;
 				pits[currentPit] = 0;
 				g = currentPit;
-				std::cout << GREEN << "!!! Tyzdyk! Vi zabrali 3 kamnya !!!"<< RESET << std::endl;
+				cout << GREEN << "!!! Tyzdyk! Vi zabrali 3 kamnya !!!"<< RESET << std::endl;
 			}
 		}
 		if (tyzdyk) {
